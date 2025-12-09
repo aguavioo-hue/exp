@@ -1,0 +1,10 @@
+# EXP — Backend ERP con Express + Supabase + Railway
+
+Este es el backend del proyecto **exp**, creado para funcionar como ERP en la nube:
+
+- Express.js
+- Supabase (Base de Datos)
+- Railway (Hosting backend)
+
+
+## 🚀 1. Instalar dependencias
