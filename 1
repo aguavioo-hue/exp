@@ -1,0 +1,103 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
+
+dotenv.config();
+
+const app = express();
+
+app.use(express.json());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || "*"
+}));
+
+// --------------------
+// Conexión a Supabase
+// --------------------
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+// --------------------
+// Ruta de prueba
+// --------------------
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    project: "exp",
+    time: new Date().toISOString()
+  });
+});
+
+// --------------------
+// CRUD: EMPRESAS
+// --------------------
+app.get("/api/companies", async (req, res) => {
+  const { data, error } = await supabase.from("companies").select("*");
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+app.post("/api/companies", async (req, res) => {
+  const { name, nit } = req.body;
+
+  const { data, error } = await supabase
+    .from("companies")
+    .insert([{ name, nit }])
+    .select();
+
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+// --------------------
+// CRUD: CLIENTES
+// --------------------
+app.get("/api/customers", async (req, res) => {
+  const { data, error } = await supabase.from("customers").select("*");
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+app.post("/api/customers", async (req, res) => {
+  const { name, email, phone } = req.body;
+
+  const { data, error } = await supabase
+    .from("customers")
+    .insert([{ name, email, phone }])
+    .select();
+
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+// --------------------
+// CRUD: PROYECTOS
+// --------------------
+app.get("/api/projects", async (req, res) => {
+  const { data, error } = await supabase.from("projects").select("*");
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+app.post("/api/projects", async (req, res) => {
+  const { name, description, customer_id, budget } = req.body;
+
+  const { data, error } = await supabase
+    .from("projects")
+    .insert([{ name, description, customer_id, budget }])
+    .select();
+
+  if (error) return res.status(400).json({ error });
+  res.json(data);
+});
+
+// --------------------
+// PUERTO
+// --------------------
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Servidor exp escuchando en puerto ${port}`);
+});
